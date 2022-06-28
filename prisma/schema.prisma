@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(256)
+  email     String   @unique @db.VarChar(256)
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  account              Account?  @relation(name: "user", fields: [accountId], references: [id]) // @relation("user")
+  accountId            Int?      @unique
+  accountBeneficiaries Account[] @relation("beneficiaries")
+}
+
+model Account {
+  id                   Int           @id @default(autoincrement())
+  accountBalance       Float         @default(0.00)
+  accountNo            Int
+  transactionsMade     Transaction[] @relation("sent_transactions")
+  transactionsReceived Transaction[] @relation("rec_transactions")
+
+  user          User?    @relation("user")
+  beneficiaries User[]   @relation("beneficiaries")
+  createdAt     DateTime @default(now()) @map("created_at")
+}
+
+model Transaction {
+  id           Int     @id @default(autoincrement())
+  senderId     Int
+  sender       Account @relation("sent_transactions", fields: [senderId], references: [id])
+  receipientId Int
+  receipient   Account @relation("rec_transactions", fields: [receipientId], references: [id])
+  status       Status // @default(Status.PENDING)
+}
+
+enum Status {
+  PENDING
+  SUCCESS
+  FAILED
+}
