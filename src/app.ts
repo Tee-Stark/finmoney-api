@@ -13,4 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // routes
 app.use(`${API_PATH}/user`, userRoutes);
 app.use('/flw-webhook', flwRoute);
+app.use('/fund-success', (req, res) => {
+  return res.status(200).send('Payment Successful ✔ ');
+});
 export default app;
