@@ -3,3 +3,6 @@ yarn-error.log
 
 *.sql
 migration_lock.toml
+
+*.js
+.env
